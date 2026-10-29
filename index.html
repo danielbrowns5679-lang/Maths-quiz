@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JAMB Mathematics CBT - 40 Questions</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#eef2f7;color:#172033;font-family:Arial,sans-serif}
+header{background:#073b8c;color:white;padding:22px 15px;text-align:center}
+header h1{font-size:23px;margin:0 0 8px}
+main{max-width:800px;margin:20px auto;padding:12px}
+.card{background:white;padding:20px;border-radius:14px;margin-bottom:16px;box-shadow:0 3px 12px #0001}
+.stats{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-weight:bold}
+.bar{height:8px;background:#dbe3ef;border-radius:8px;margin-top:15px;overflow:hidden}
+#fill{height:100%;width:0;background:#16a34a}
+#section{color:#0755bd;font-weight:bold}
+#question{font-size:19px;line-height:1.5}
+.option{display:block;width:100%;padding:14px;margin:9px 0;background:white;border:2px solid #dbe3ef;border-radius:9px;text-align:left;font-size:16px;cursor:pointer}
+.option:hover:not(:disabled){background:#eff6ff;border-color:#0755bd}
+.option:disabled{color:#172033;cursor:default}
+.correct{background:#dcfce7!important;border-color:#16a34a!important}
+.wrong{background:#fee2e2!important;border-color:#dc2626!important}
+button.main{background:#0755bd;color:white;border:0;border-radius:9px;padding:13px 18px;font-size:16px;cursor:pointer}
+#next{display:none;margin-top:12px}
+#feedback{display:none;margin-top:15px;padding:13px;line-height:1.6;border-radius:8px}
+#results{display:none}
+.small{font-size:13px;color:#64748b}
+.review{border-top:1px solid #ddd;padding:12px 0;line-height:1.5}
+</style>
+</head>
+<body>
+<header>
+<h1>JAMB Mathematics CBT</h1>
+<p>40 Questions • 5 Syllabus Sections</p>
+<p>Practice test — not official JAMB questions</p>
+</header>
+<main>
+<div class="card">
+<div class="stats"><span id="count">Question 1 of 40</span><span id="score">Score: 0</span></div>
+<div class="bar"><div id="fill"></div></div>
+<p class="small">Select one answer. Each question carries 1 mark.</p>
+</div>
+<div class="card" id="quiz">
+<p id="section"></p><h2 id="question"></h2>
+<div id="options"></div><div id="feedback"></div>
+<button class="main" id="next" onclick="nextQuestion()">Next question →</button>
+</div>
+<div class="card" id="results">
+<h2>Test completed</h2><h1 id="finalScore"></h1><p id="percent"></p><p id="comment"></p>
+<h3>Review your mistakes</h3><div id="review"></div>
+<button class="main" onclick="restart()">Retake test</button>
+</div>
+</main>
+<script>
+const data = [
+{s:"I. NUMBER AND NUMERATION",q:"Convert 1011₂ to base 10.",o:["9","10","11","13"],a:2,e:"1×8 + 0×4 + 1×2 + 1 = 11."},
+{s:"I. NUMBER AND NUMERATION",q:"Express 25₁₀ in base 2.",o:["10101₂","11001₂","11100₂","10011₂"],a:1,e:"25 = 16 + 8 + 1, giving 11001₂."},
+{s:"I. NUMBER AND NUMERATION",q:"Evaluate 23₄ + 12₄.",o:["31₄","101₄","111₄","121₄"],a:1,e:"23₄ = 11 and 12₄ = 6 in base 10. Their sum is 17₁₀ = 101₄."},
+{s:"I. NUMBER AND NUMERATION",q:"Find 15% of ₦800.",o:["₦100","₦120","₦150","₦180"],a:1,e:"15/100 × 800 = ₦120."},
+{s:"I. NUMBER AND NUMERATION",q:"Simplify 2³ × 2⁴.",o:["2⁷","2¹²","4⁷","2¹"],a:0,e:"When multiplying powers with the same base, add indices: 3 + 4 = 7."},
+{s:"I. NUMBER AND NUMERATION",q:"Simplify √50.",o:["5√2","2√5","10√5","25√2"],a:0,e:"√50 = √(25×2) = 5√2."},
+{s:"I. NUMBER AND NUMERATION",q:"If A = {1,2,3,4} and B = {3,4,5}, find A ∩ B.",o:["{1,2}","{3,4}","{1,2,5}","{1,2,3,4,5}"],a:1,e:"The intersection contains elements common to both sets: 3 and 4."},
+{s:"I. NUMBER AND NUMERATION",q:"Find the simple interest on ₦5,000 at 4% per annum for 3 years.",o:["₦400","₦500","₦600","₦800"],a:2,e:"I = PRT/100 = 5000×4×3/100 = ₦600."},
+
+{s:"II. ALGEBRA",q:"Solve 3x + 5 = 20.",o:["3","5","6","8"],a:1,e:"3x = 15, so x = 5."},
+{s:"II. ALGEBRA",q:"Factorize x² − 9.",o:["(x−9)(x+1)","(x−3)(x+3)","(x−3)²","(x+9)(x−1)"],a:1,e:"x² − 3² = (x−3)(x+3)."},
+{s:"II. ALGEBRA",q:"Solve simultaneously: x + y = 7 and x − y = 3.",o:["x=4, y=3","x=5, y=2","x=3, y=4","x=6, y=1"],a:1,e:"Adding the equations gives 2x=10, so x=5 and y=2."},
+{s:"II. ALGEBRA",q:"Find the 10th term of the arithmetic progression 3, 7, 11, 15, ...",o:["35","39","40","43"],a:1,e:"Tₙ = a+(n−1)d = 3+9×4 = 39."},
+{s:"II. ALGEBRA",q:"If y varies directly as x and y=12 when x=4, find y when x=7.",o:["18","21","24","28"],a:1,e:"y=kx; k=12/4=3. Therefore y=3×7=21."},
+{s:"II. ALGEBRA",q:"Solve 2x − 3 > 7.",o:["x>2","x>5","x<5","x>10"],a:1,e:"2x>10. Dividing by 2 gives x>5."},
+{s:"II. ALGEBRA",q:"Find the determinant of [[2,3],[1,4]].",o:["5","8","11","−5"],a:0,e:"Determinant = (2×4) − (3×1) = 5."},
+{s:"II. ALGEBRA",q:"If a ⊙ b = a + 2b, find 3 ⊙ 4.",o:["7","10","11","14"],a:2,e:"3 ⊙ 4 = 3 + 2(4) = 11."},
+
+{s:"III. GEOMETRY AND TRIGONOMETRY",q:"Two angles of a triangle are 50° and 60°. Find the third angle.",o:["60°","70°","80°","90°"],a:1,e:"The angles of a triangle sum to 180°. Third angle = 180−110 = 70°."},
+{s:"III. GEOMETRY AND TRIGONOMETRY",q:"Find the area of a triangle with base 10 cm and height 6 cm.",o:["16 cm²","30 cm²","60 cm²","80 cm²"],a:1,e:"Area = ½ × base × height = ½×10×6 = 30 cm²."},
+{s:"III. GEOMETRY AND TRIGONOMETRY",q:"Find the circumference of a circle of radius 7 cm. Use π=22/7.",o:["22 cm","44 cm","49 cm","154 cm"],a:1,e:"C=2πr=2×22/7×7=44 cm."},
+{s:"III. GEOMETRY AND TRIGONOMETRY",q:"Find the gradient of the line through (2,3) and (6,11).",o:["1","2","3","4"],a:1,e:"Gradient = (11−3)/(6−2) = 8/4 = 2."},
+{s:"III. GEOMETRY AND TRIGONOMETRY",q:"Find the distance between (1,2) and (4,6).",o:["4","5","6","7"],a:1,e:"Distance = √[(4−1)²+(6−2)²] = √25 = 5."},
+{s:"III. GEOMETRY AND TRIGONOMETRY",q:"If sin θ = 3/5 for an acute angle, find cos θ.",o:["2/5","3/4","4/5","5/4"],a:2,e:"Using a 3-4-5 right triangle, cos θ = adjacent/hypotenuse = 4/5."},
+{s:"III. GEOMETRY AND TRIGONOMETRY",q:"A person stands 20 m from a building. The angle of elevation to its top is 45°. Find the building's height, ignoring eye height.",o:["10 m","20 m","20√3 m","40 m"],a:1,e:"tan45° = height/20 = 1. Therefore height = 20 m."},
+{s:"III. GEOMETRY AND TRIGONOMETRY",q:"Find the volume of a cylinder of radius 3 cm and height 5 cm.",o:["15π cm³","30π cm³","45π cm³","90π cm³"],a:2,e:"V = πr²h = π×9×5 = 45π cm³."},
+
+{s:"IV. CALCULUS",q:"Differentiate y = x³ with respect to x.",o:["x²","2x","3x²","3x"],a:2,e:"Using d(xⁿ)/dx = nxⁿ⁻¹, dy/dx = 3x²."},
+{s:"IV. CALCULUS",q:"Differentiate y = 5x² + 2x − 7.",o:["10x+2","5x+2","10x−7","5x²+2"],a:0,e:"Differentiate each term: 10x + 2."},
+{s:"IV. CALCULUS",q:"Evaluate ∫ 4x³ dx.",o:["x⁴+C","4x⁴+C","12x²+C","x³+C"],a:0,e:"Increase the power by one and divide by the new power: 4x⁴/4 = x⁴+C."},
+{s:"IV. CALCULUS",q:"Find the gradient of y = 2x² + 3x at x = 2.",o:["7","8","10","11"],a:3,e:"dy/dx = 4x+3. At x=2, the gradient is 8+3=11."},
+{s:"IV. CALCULUS",q:"Evaluate lim (x²−4)/(x−2) as x approaches 2.",o:["0","2","4","Undefined"],a:2,e:"Factor x²−4=(x−2)(x+2). The limit is x+2 at x=2, which equals 4."},
+{s:"IV. CALCULUS",q:"Find the stationary point's x-coordinate for y = x² − 6x + 5.",o:["−3","0","3","6"],a:2,e:"dy/dx=2x−6. Set it to zero: 2x−6=0, so x=3."},
+{s:"IV. CALCULUS",q:"Evaluate ∫₀² 2x dx.",o:["2","4","6","8"],a:1,e:"The integral is [x²] from 0 to 2 = 4−0 = 4."},
+{s:"IV. CALCULUS",q:"If s = t² + 3t, find the velocity when t = 2.",o:["5","6","7","8"],a:2,e:"Velocity ds/dt = 2t+3. At t=2, velocity = 7."},
+
+{s:"V. STATISTICS",q:"Find the mean of 2, 4, 6, 8, 10.",o:["5","6","7","8"],a:1,e:"Mean = (2+4+6+8+10)/5 = 30/5 = 6."},
+{s:"V. STATISTICS",q:"Find the median of 3, 9, 5, 1, 7.",o:["3","5","7","9"],a:1,e:"Arrange them: 1, 3, 5, 7, 9. The middle value is 5."},
+{s:"V. STATISTICS",q:"Find the mode of 2, 3, 3, 4, 5, 3, 6.",o:["2","3","4","5"],a:1,e:"The mode is the most frequent value. 3 occurs three times."},
+{s:"V. STATISTICS",q:"A fair die is thrown once. What is the probability of obtaining a 4?",o:["1/2","1/3","1/6","2/3"],a:2,e:"There is one favourable outcome among six equally likely outcomes: 1/6."},
+{s:"V. STATISTICS",q:"A fair coin is tossed twice. Find the probability of getting two heads.",o:["1/2","1/3","1/4","3/4"],a:2,e:"Possible outcomes: HH, HT, TH, TT. Only HH gives two heads, so probability = 1/4."},
+{s:"V. STATISTICS",q:"In how many ways can 3 different books be arranged on a shelf?",o:["3","6","9","12"],a:1,e:"3! = 3×2×1 = 6 arrangements."},
+{s:"V. STATISTICS",q:"How many ways can 2 students be selected from 5 students?",o:["5","10","15","20"],a:1,e:"⁵C₂ = 5!/(2!3!) = 10."},
+{s:"V. STATISTICS",q:"Find the range of 12, 4, 9, 17, 6.",o:["9","11","13","17"],a:2,e:"Range = maximum − minimum = 17−4 = 13."}
+];
+
+let order=[],pos=0,score=0,missed=[],locked=false;
+function shuffle(a){
+ for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+ return a;
+}
+function start(){
+ order=shuffle(data.map((_,i)=>i));pos=0;score=0;missed=[];locked=false;
+ document.getElementById("results").style.display="none";
+ document.getElementById("quiz").style.display="block";show();
+}
+function show(){
+ locked=false;let q=data[order[pos]];
+ document.getElementById("count").textContent=`Question ${pos+1} of ${data.length}`;
+ document.getElementById("score").textContent=`Score: ${score}`;
+ document.getElementById("fill").style.width=`${pos/data.length*100}%`;
+ document.getElementById("section").textContent=q.s;
+ document.getElementById("question").textContent=q.q;
+ let box=document.getElementById("options");box.innerHTML="";
+ q.o.forEach((v,i)=>{let b=document.createElement("button");b.className="option";b.textContent=String.fromCharCode(65+i)+". "+v;b.onclick=()=>answer(i);box.appendChild(b);});
+ document.getElementById("feedback").style.display="none";
+ document.getElementById("next").style.display="none";
+}
+function answer(choice){
+ if(locked)return;locked=true;let q=data[order[pos]];
+ let buttons=document.querySelectorAll(".option");buttons.forEach(b=>b.disabled=true);
+ buttons[q.a].classList.add("correct");
+ let f=document.getElementById("feedback");
+ if(choice===q.a){score++;f.style.background="#dcfce7";f.innerHTML="<b>Correct!</b><br>"+q.e;}
+ else{buttons[choice].classList.add("wrong");missed.push({q:q.q,correct:q.o[q.a],e:q.e,s:q.s});f.style.background="#fee2e2";f.innerHTML="<b>Incorrect.</b> Correct answer: "+q.o[q.a]+"<br>"+q.e;}
+ f.style.display="block";document.getElementById("score").textContent="Score: "+score;
+ let n=document.getElementById("next");n.style.display="inline-block";n.textContent=pos===data.length-1?"View results →":"Next question →";
+}
+function nextQuestion(){if(!locked)return;pos++;if(pos<data.length)show();else finish();}
+function finish(){
+ document.getElementById("quiz").style.display="none";document.getElementById("results").style.display="block";
+ document.getElementById("fill").style.width="100%";
+ let p=Math.round(score/data.length*100);
+ document.getElementById("finalScore").textContent=score+" / "+data.length;
+ document.getElementById("percent").textContent="Percentage: "+p+"%";
+ document.getElementById("comment").textContent=p>=80?"Excellent. Keep practising under timed conditions.":p>=50?"Good effort. Review your mistakes before another test.":"Revise the weak topics and retake the test.";
+ let r=document.getElementById("review");r.innerHTML="";
+ if(!missed.length){r.textContent="Perfect score! No mistakes to review.";return;}
+ missed.forEach((m,i)=>{let d=document.createElement("div");d.className="review";let h=document.createElement("b");h.textContent=(i+1)+". "+m.s;let p=document.createElement("p");p.textContent=m.q;let a=document.createElement("p");a.textContent="Correct answer: "+m.correct;let e=document.createElement("p");e.textContent=m.e;d.append(h,p,a,e);r.appendChild(d);});
+}
+function restart(){start()}
+start();
+</script>
+</body>
+</html>
